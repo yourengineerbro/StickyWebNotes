@@ -21,18 +21,18 @@
   // }
   // let notes = JSON.parse(storageData) || {};
 
-  let notes = JSON.parse(localStorage.getItem('stickyNotes')) || {};
+  let notes = JSON.parse(localStorage.getItem(cleanUrl)) || {};
 // whether I need or not
 
 
   // Load notes for this cleanUrl
   console.log(notes);
-  if (notes[cleanUrl]) {
-    Object.keys(notes[cleanUrl]).forEach(id => {
-      createNoteElement(id, notes[cleanUrl][id].text, notes[cleanUrl][id].position);
+  if (notes) {
+    Object.keys(notes).forEach(id => {
+      createNoteElement(id, notes[id].text, notes[id].position);
     });
   } else {
-    notes[cleanUrl] = {};
+    notes = {};
   }
 
   // Create a new note
@@ -133,18 +133,18 @@
   }
   
   function saveNote(id, text, position) {
-    notes[cleanUrl][id] = { text, position };
-    localStorage.setItem('stickyNotes', JSON.stringify(notes));
+    notes[id] = { text, position };
+    localStorage.setItem(cleanUrl, JSON.stringify(notes));
   }
 
   function deleteNote(id, container) {
      
     container.remove();
-    delete notes[cleanUrl][id];
-    localStorage.setItem('stickyNotes', JSON.stringify(notes));
+    delete notes[id];
+    localStorage.setItem(cleanUrl, JSON.stringify(notes));
       
   }
-
+  
   function downloadNotes() {
     const notesData = JSON.stringify(notes, null, 2);
     const blob = new Blob([notesData], { type: 'application/json' });
