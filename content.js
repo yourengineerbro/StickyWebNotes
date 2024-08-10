@@ -1,3 +1,5 @@
+var myNotesArray = new Array();
+
 (function() {
 
   // this removes the fragment identifier(#) from url
@@ -21,19 +23,47 @@
   // }
   // let notes = JSON.parse(storageData) || {};
 
-  let notes = JSON.parse(localStorage.getItem(cleanUrl)) || {};
+  // let notes = JSON.parse(localStorage.getItem(cleanUrl)) || {};
+
+  // var notes = {};
+
+  
+
+  chrome.storage.local.get(cleanUrl, (result) => {
+
+    if (chrome.runtime.error) {
+      console.error("Error getting item:", chrome.runtime.error);
+    } else {
+      console.log("result: " + JSON.stringify(result));
+       myNotesArray = result[cleanUrl] || [];
+      // Now you can manipulate the array as needed
+      for(let i = 0; i < myNotesArray.length; i++) {
+        let note = myNotesArray[i];
+        createNoteElement(note.id, note.text, note.position);
+      }
+      //  for(const note of myNotesArray) {
+      //     createNoteElement(note.id, note.text, note.position);
+      //  }
+    }
+    // console.log("inside get");
+    //   // Load notes for this cleanUrl
+    //   notes = note;
+    //   console.log(note);
+    //   if (notes) {
+    //     Object.keys(notes).forEach(element => {
+    //       createNoteElement(element.id, element.text, element.position);
+    //     });
+    //   } else {
+    //     notes = {};
+    //   }
+  })
+
+
+  
 // whether I need or not
 
 
-  // Load notes for this cleanUrl
-  console.log(notes);
-  if (notes) {
-    Object.keys(notes).forEach(id => {
-      createNoteElement(id, notes[id].text, notes[id].position);
-    });
-  } else {
-    notes = {};
-  }
+  
 
   // Create a new note
   document.addEventListener('dblclick', (e) => {
@@ -133,18 +163,59 @@
   }
   
   function saveNote(id, text, position) {
-    notes[id] = { text, position };
-    localStorage.setItem(cleanUrl, JSON.stringify(notes));
+    const index = myNotesArray.findIndex(item => item.id === id);
+    if(index != -1) {
+       let updatedNote = {
+          "id" : id,
+          "text" : text,
+          "position" : position
+       };
+       myNotesArray[index] = { ...myNotesArray[index], ...updatedNote };
+    } else {
+       let myNote = {
+        "id" : id,
+        "text" : text,
+        "position" : position
+     };
+     myNotesArray.push(myNote);
+    }
+
+    console.log("mynotes array: " + myNotesArray);
+    // myNotesArray.push({
+    //   "id" : id,
+    //   "text" : text,
+    //   "position" : position
+    // })
+    chrome.storage.local.set({ [cleanUrl]: myNotesArray }, function() {
+      if (chrome.runtime.error) {
+        console.error("Error setting item:", chrome.runtime.error);
+      } else {
+         
+        console.log("Note saved successfully");
+      }
+    });
+    // chrome.storage.local.set({[cleanUrl] : notes}, ()=>{
+    //     console.log("Note saved");
+    //     chrome.storage.local.get([cleanUrl], (value) => {
+    //       console.log(value);
+    //     })
+    // })
+    // localStorage.setItem(cleanUrl, JSON.stringify(notes));
   }
 
   function deleteNote(id, container) {
      
     container.remove();
-    delete notes[id];
-    localStorage.setItem(cleanUrl, JSON.stringify(notes));
+    const index = myNotesArray.findIndex(item => item.id === id);
+    myNotesArray.splice(index,1);
+    // delete notes[id];
+    chrome.storage.local.set({[cleanUrl] : myNotesArray}, ()=>{
+      console.log("Note deleted");
+  })
+    // localStorage.setItem(cleanUrl, JSON.stringify(notes));
       
   }
-  
+
   function downloadNotes() {
     const notesData = JSON.stringify(notes, null, 2);
     const blob = new Blob([notesData], { type: 'application/json' });
