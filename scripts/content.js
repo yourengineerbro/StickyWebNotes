@@ -10,64 +10,26 @@ var myNotesArray = new Array();
   }
   
   const originalUrl = window.location.href;
-  console.log("original : ")
-  console.log(originalUrl);
   const cleanUrl = removeFragmentIdentifier(originalUrl);
-  
-
-  // TODO: Getting [object Object] on stackoverflow. 
-  // TODO: I don't know what this code is doing
-  // const storageData =JSON.stringify(localStorage.getItem('stickyNotes'))
-  // if(storageData == "[object Object]") {
-  //    localStorage.setItem('stickyNotes', {});
-  // }
-  // let notes = JSON.parse(storageData) || {};
-
-  // let notes = JSON.parse(localStorage.getItem(cleanUrl)) || {};
-
-  // var notes = {};
-
-  
 
   chrome.storage.local.get(cleanUrl, (result) => {
 
     if (chrome.runtime.error) {
       console.error("Error getting item:", chrome.runtime.error);
     } else {
-      console.log("result: " + JSON.stringify(result));
        myNotesArray = result[cleanUrl] || [];
       // Now you can manipulate the array as needed
       for(let i = 0; i < myNotesArray.length; i++) {
         let note = myNotesArray[i];
         createNoteElement(note.id, note.text, note.position);
       }
-      //  for(const note of myNotesArray) {
-      //     createNoteElement(note.id, note.text, note.position);
-      //  }
+  
     }
-    // console.log("inside get");
-    //   // Load notes for this cleanUrl
-    //   notes = note;
-    //   console.log(note);
-    //   if (notes) {
-    //     Object.keys(notes).forEach(element => {
-    //       createNoteElement(element.id, element.text, element.position);
-    //     });
-    //   } else {
-    //     notes = {};
-    //   }
   })
 
 
-  
-// whether I need or not
-
-
-  
-
   // Create a new note
   document.addEventListener('dblclick', (e) => {
-    console.log("double clicked");
     const id = 'note-' + new Date().getTime();
     const position = { x: e.pageX, y: e.pageY };
     createNoteElement(id, '', position);
@@ -180,27 +142,13 @@ var myNotesArray = new Array();
      myNotesArray.push(myNote);
     }
 
-    console.log("mynotes array: " + myNotesArray);
-    // myNotesArray.push({
-    //   "id" : id,
-    //   "text" : text,
-    //   "position" : position
-    // })
+ 
     chrome.storage.local.set({ [cleanUrl]: myNotesArray }, function() {
       if (chrome.runtime.error) {
         console.error("Error setting item:", chrome.runtime.error);
       } else {
-         
-        console.log("Note saved successfully");
       }
     });
-    // chrome.storage.local.set({[cleanUrl] : notes}, ()=>{
-    //     console.log("Note saved");
-    //     chrome.storage.local.get([cleanUrl], (value) => {
-    //       console.log(value);
-    //     })
-    // })
-    // localStorage.setItem(cleanUrl, JSON.stringify(notes));
   }
 
   function deleteNote(id, container) {
@@ -208,32 +156,10 @@ var myNotesArray = new Array();
     container.remove();
     const index = myNotesArray.findIndex(item => item.id === id);
     myNotesArray.splice(index,1);
-    // delete notes[id];
     chrome.storage.local.set({[cleanUrl] : myNotesArray}, ()=>{
       console.log("Note deleted");
   })
-    // localStorage.setItem(cleanUrl, JSON.stringify(notes));
       
   }
-
-  function downloadNotes() {
-    const notesData = JSON.stringify(notes, null, 2);
-    const blob = new Blob([notesData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'stickyNotes.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-  
-  // Example: Add a button to download notes
-  const downloadButton = document.createElement('button');
-  downloadButton.innerText = 'Download Notes';
-  downloadButton.style.position = 'fixed';
-  downloadButton.style.bottom = '10px';
-  downloadButton.style.right = '10px';
-  downloadButton.addEventListener('click', downloadNotes);
-  document.body.appendChild(downloadButton);
 
 })();
