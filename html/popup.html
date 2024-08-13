@@ -1,12 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Sticky Notes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticky Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        a {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+
+        #contribute {
+            background-color: #008CBA;
+        }
+
+        #contribute:hover {
+            background-color: #007bb5;
+        }
+    </style>
 </head>
 <body>
-  <h1>Sticky Notes Extension</h1>
-  <p>Double-click anywhere on a webpage to add a sticky note.</p>
-  <a href="#">View All Notes</a>
-  <script src="../scripts/popup.js"></script>
+    <h1>Sticky Web Notes</h1>
+    <p>Double-click anywhere on a webpage to add a sticky note.</p>
+    <a href="#" id="allnotes">View All Notes</a>
+    <a href="#" id="contribute">Contribute on GitHub</a>
+    <script src="../scripts/popup.js"></script>
 </body>
 </html>

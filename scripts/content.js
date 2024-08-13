@@ -152,14 +152,25 @@ var myNotesArray = new Array();
   }
 
   function deleteNote(id, container) {
-     
+    const userConfirmed = confirm("Are you sure you want to delete this note?");
+    if(userConfirmed) {
     container.remove();
     const index = myNotesArray.findIndex(item => item.id === id);
     myNotesArray.splice(index,1);
+    if(myNotesArray.length == 0) {
+      chrome.storage.local.remove(cleanUrl, (removedItems) => {
+        if (chrome.runtime.lastError) {
+          console.error('Error removing item:', chrome.runtime.lastError);
+        } else {
+          console.log('Item removed:', removedItems);
+        }
+      });
+    } else {
     chrome.storage.local.set({[cleanUrl] : myNotesArray}, ()=>{
       console.log("Note deleted");
   })
-      
+}
+}
   }
 
 })();

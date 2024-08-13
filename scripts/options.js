@@ -1,5 +1,5 @@
 let expandableList = document.getElementById('expandableList');
-
+let count = 1;
 
 chrome.storage.local.get(null, (listData) => {
     
@@ -10,22 +10,29 @@ chrome.storage.local.get(null, (listData) => {
       
         const link = document.createElement('a');
         link.href = key;
+        link.target = "_blank";
         link.textContent = key;
         const heading = document.createElement('h3');
         heading.classList.add('heading');
         heading.style.display = 'flex'; // Use flexbox to align divs in a row
         heading.style.justifyContent = 'space-between'; // Optional: space between divs
-        heading.style.width = '93%';
+        heading.style.width = '100%';
+        heading.style.alignItems = 'center';
 
+        const numbering = document.createElement('div');
+        numbering.innerText = count + ". ";
+        numbering.style.width = '20px';
         
         const downloadButton = document.createElement('div');
         downloadButton.id = key;
         downloadButton.innerHTML = '<a href="#">download notes</a>';
+        downloadButton.style.marginLeft = 'auto';
         downloadButton.style.right = '0';
         downloadButton.style.float = 'right';
         downloadButton.style.width = '7%';
         downloadButton.addEventListener('click', downloadNotes);
      
+        heading.append(numbering);
         heading.append(link);
         heading.append(downloadButton);
       
@@ -65,8 +72,9 @@ chrome.storage.local.get(null, (listData) => {
         Object.keys(data).forEach(key => {
               const listItem = createListItem(key, data[key]);
               expandableList.appendChild(listItem);
+              count++;
         });
-        
+       
       }
       
       populateList(listData);
